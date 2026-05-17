@@ -48,27 +48,26 @@ jobs:
         run: |
           mkdir -p config
           cat > config/config.yaml <<'EOF'
+          douban:
+            cookie: "${DOUBAN_COOKIE}"
+            user_id: "${DOUBAN_USER_ID}"
+            use_selenium: false
 
-douban:
-  cookie: "${DOUBAN_COOKIE}"
-  user_id: "${DOUBAN_USER_ID}"
-  use_selenium: false
+          storage:
+            imgur:
+              client_id: "${IMGUR_CLIENT_ID}"
 
-storage:
-  imgur:
-    client_id: "${IMGUR_CLIENT_ID}"
+          notion:
+            api_token: "${NOTION_API_TOKEN}"
+            database_id: "${NOTION_DATABASE_ID}"
+            overwrite_existing: true
 
-notion:
-  api_token: "${NOTION_API_TOKEN}"
-  database_id: "${NOTION_DATABASE_ID}"
-  overwrite_existing: true
-
-sync:
-  max_items: -1
-  incremental: true
-  sync_comments: true
-  interval_hours: 24
-EOF
+          sync:
+            max_items: -1
+            incremental: true
+            sync_comments: true
+            interval_hours: 24
+          EOF
 
       - name: Run sync
         env:
