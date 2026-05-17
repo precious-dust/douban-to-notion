@@ -1,0 +1,11 @@
+requests==2.31.0
+beautifulsoup4==4.12.2
+notion-client==2.2.1
+pyyaml==6.0
+schedule==1.2.0
+python-dotenv==1.0.0
+lxml==4.9.3
+
+# 可选依赖（用于 Selenium 模式，遇到反爬时启用）
+# selenium
+# webdriver-manager

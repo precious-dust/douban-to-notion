@@ -1,0 +1,65 @@
+name: Sync Douban to Notion
+
+on:
+  # 定时触发：每天北京时间凌晨 3 点（UTC 19:00）
+  schedule:
+    - cron: '0 19 * * *'
+  
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      with_details:
+        description: '是否获取详细信息（封面、导演、主演等）'
+        required: false
+        default: 'true'
+        type: boolean
+      max_items:
+        description: '最大同步数量（-1 表示全部）'
+        required: false
+        default: '-1'
+        type: string
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r config/requirements.txt
+      
+      - name: Run sync
+        env:
+          DOUBAN_COOKIE: ${{ secrets.DOUBAN_COOKIE }}
+          DOUBAN_USER_ID: ${{ secrets.DOUBAN_USER_ID }}
+          NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          # 构建命令
+          CMD="python src/main.py --sync-now"
+          
+          # 是否获取详情
+          if [ "${{ inputs.with_details }}" = "true" ] || [ "${{ inputs.with_details }}" = "" ]; then
+            CMD="$CMD --with-details"
+          fi
+          
+          echo "Running: $CMD"
+          eval $CMD
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-logs
+          path: logs/
+          retention-days: 7

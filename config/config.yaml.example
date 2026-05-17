@@ -1,0 +1,18 @@
+# 豆瓣配置
+douban:
+  cookie: "你的豆瓣Cookie"
+  user_id: "你的豆瓣用户ID"
+  use_selenium: false  # 遇到反爬时设为 true
+
+# Notion配置
+notion:
+  api_token: "你的Notion API Token"
+  database_id: "你的数据库ID"  # 32位UUID，不含URL前缀
+  overwrite_existing: true
+
+# 同步配置
+sync:
+  max_items: -1  # -1 表示同步全部，或设置数字限制数量
+  incremental: true  # 增量同步，只同步新电影
+  sync_comments: true
+  interval_hours: 24  # 自动同步间隔（小时）
