@@ -32,14 +32,18 @@ def load_config(config_path: str = "config/config.yaml") -> dict:
             'DOUBAN_USER_ID': ('douban', 'user_id'),
             'NOTION_API_TOKEN': ('notion', 'api_token'),
             'NOTION_DATABASE_ID': ('notion', 'database_id'),
+            'IMGUR_CLIENT_ID': ('storage', 'imgur', 'client_id'),
         }
-        
-        for env_key, (section, field) in env_mappings.items():
+
+        for env_key, path in env_mappings.items():
             env_value = os.environ.get(env_key)
             if env_value:
-                if section not in config:
-                    config[section] = {}
-                config[section][field] = env_value
+                target = config
+                for segment in path[:-1]:
+                    if segment not in target or not isinstance(target[segment], dict):
+                        target[segment] = {}
+                    target = target[segment]
+                target[path[-1]] = env_value
                 logger.info(f"从环境变量读取配置: {env_key}")
         
         logger.info(f"配置加载成功: {config_path}")

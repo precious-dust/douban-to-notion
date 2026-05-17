@@ -145,6 +145,7 @@ python src/main.py --auto --with-details
    | `DOUBAN_USER_ID` | 豆瓣用户 ID |
    | `NOTION_API_TOKEN` | Notion API Token |
    | `NOTION_DATABASE_ID` | Notion 数据库 ID |
+   | `IMGUR_CLIENT_ID` | 可选：Imgur Client ID，用于封面托管 |
 
 3. **启用 Actions**
    

@@ -10,6 +10,11 @@ notion:
   database_id: "你的数据库ID"  # 32位UUID，不含URL前缀
   overwrite_existing: true
 
+# 可选存储配置：用于托管封面图片，减少外链问题
+storage:
+  imgur:
+    client_id: "YOUR_IMGUR_CLIENT_ID"
+
 # 同步配置
 sync:
   max_items: -1  # -1 表示同步全部，或设置数字限制数量
