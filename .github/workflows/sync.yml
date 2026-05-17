@@ -46,28 +46,36 @@ jobs:
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
         run: |
-          mkdir -p config
-          cat > config/config.yaml <<'EOF'
-          douban:
-            cookie: "${DOUBAN_COOKIE}"
-            user_id: "${DOUBAN_USER_ID}"
-            use_selenium: false
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          from textwrap import dedent
 
-          storage:
-            imgur:
-              client_id: "${IMGUR_CLIENT_ID}"
+          config = dedent(f'''\
+              douban:
+                cookie: "{os.environ['DOUBAN_COOKIE']}"
+                user_id: "{os.environ['DOUBAN_USER_ID']}"
+                use_selenium: false
 
-          notion:
-            api_token: "${NOTION_API_TOKEN}"
-            database_id: "${NOTION_DATABASE_ID}"
-            overwrite_existing: true
+              storage:
+                imgur:
+                  client_id: "{os.environ.get('IMGUR_CLIENT_ID', '')}"
 
-          sync:
-            max_items: -1
-            incremental: true
-            sync_comments: true
-            interval_hours: 24
-          EOF
+              notion:
+                api_token: "{os.environ['NOTION_API_TOKEN']}"
+                database_id: "{os.environ['NOTION_DATABASE_ID']}"
+                overwrite_existing: true
+
+              sync:
+                max_items: -1
+                incremental: true
+                sync_comments: true
+                interval_hours: 24
+          ''')
+          path = Path('config')
+          path.mkdir(exist_ok=True)
+          (path / 'config.yaml').write_text(config, encoding='utf-8')
+          PY
 
       - name: Run sync
         env:
