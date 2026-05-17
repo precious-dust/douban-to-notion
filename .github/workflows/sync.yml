@@ -47,34 +47,35 @@ jobs:
           IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
         run: |
           python - <<'PY'
+          import json
           import os
           from pathlib import Path
-          from textwrap import dedent
 
-          config = dedent(f'''\
-              douban:
-                cookie: "{os.environ['DOUBAN_COOKIE']}"
-                user_id: "{os.environ['DOUBAN_USER_ID']}"
-                use_selenium: false
+          config_lines = [
+              'douban:',
+              f'  cookie: {json.dumps(os.environ["DOUBAN_COOKIE"])}',
+              f'  user_id: {json.dumps(os.environ["DOUBAN_USER_ID"])}',
+              '  use_selenium: false',
+              '',
+              'storage:',
+              '  imgur:',
+              f'    client_id: {json.dumps(os.environ.get("IMGUR_CLIENT_ID", ""))}',
+              '',
+              'notion:',
+              f'  api_token: {json.dumps(os.environ["NOTION_API_TOKEN"])}',
+              f'  database_id: {json.dumps(os.environ["NOTION_DATABASE_ID"])}',
+              '  overwrite_existing: true',
+              '',
+              'sync:',
+              '  max_items: -1',
+              '  incremental: true',
+              '  sync_comments: true',
+              '  interval_hours: 24',
+          ]
 
-              storage:
-                imgur:
-                  client_id: "{os.environ.get('IMGUR_CLIENT_ID', '')}"
-
-              notion:
-                api_token: "{os.environ['NOTION_API_TOKEN']}"
-                database_id: "{os.environ['NOTION_DATABASE_ID']}"
-                overwrite_existing: true
-
-              sync:
-                max_items: -1
-                incremental: true
-                sync_comments: true
-                interval_hours: 24
-          ''')
           path = Path('config')
           path.mkdir(exist_ok=True)
-          (path / 'config.yaml').write_text(config, encoding='utf-8')
+          (path / 'config.yaml').write_text('\n'.join(config_lines) + '\n', encoding='utf-8')
           PY
 
       - name: Run sync
